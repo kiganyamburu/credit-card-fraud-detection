@@ -16,7 +16,7 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
 
 - `Time`: seconds elapsed between each transaction and the first transaction.
 - `V1` ... `V28`: anonymized PCA-transformed features
-- `Amount`: transaction amount
+- `Amount`: transaction amount.
 - `Class`: target (`1` fraud, `0` non-fraud)
 
 ## What is included
