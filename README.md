@@ -37,7 +37,7 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
   - AUPRC, ROC-AUC, Brier score, and threshold metrics.
 - `report_experiments.py`: generates a compact unified report.
   - One combined results table for baseline and imbalance experiments.
-  - One multi-panel plot set for AUPRC, threshold trade-offs, and calibration
+  - One multi-panel plot set for AUPRC, threshold trade-offs, and calibration.
 
 ## Quick start
 
