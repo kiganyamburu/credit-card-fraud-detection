@@ -32,7 +32,7 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
 - `imbalance_experiments.py`: compares imbalance handling methods.
   - Baseline class-weighted logistic regression.
   - Random undersampling.
-  - SMOTE oversampling
+  - SMOTE oversampling.
   - Undersampling with calibrated probabilities
   - AUPRC, ROC-AUC, Brier score, and threshold metrics
 - `report_experiments.py`: generates a compact unified report
