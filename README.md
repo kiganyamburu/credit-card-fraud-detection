@@ -30,7 +30,7 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
   - Precision, recall, and confusion matrix at a configurable or tuned threshold.
   - Saved precision-recall curve image.
 - `imbalance_experiments.py`: compares imbalance handling methods.
-  - Baseline class-weighted logistic regression
+  - Baseline class-weighted logistic regression.
   - Random undersampling
   - SMOTE oversampling
   - Undersampling with calibrated probabilities
