@@ -26,7 +26,7 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
   - Stratified k-fold cross-validation on training data.
   - Models with class imbalance handling.
   - AUPRC-first evaluation.
-  - Bootstrap confidence intervals for mean CV AUPRC
+  - Bootstrap confidence intervals for mean CV AUPRC.
   - Precision, recall, and confusion matrix at a configurable or tuned threshold
   - Saved precision-recall curve image
 - `imbalance_experiments.py`: compares imbalance handling methods
