@@ -22,7 +22,7 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
 ## What is included
 
 - `train_baseline.py`: trains and evaluates strong classical baselines.
-  - Stratified train/test split
+  - Stratified train/test split.
   - Stratified k-fold cross-validation on training data
   - Models with class imbalance handling
   - AUPRC-first evaluation
