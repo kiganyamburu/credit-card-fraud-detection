@@ -1,0 +1,13 @@
+
+Experiment report table:
+ category                     experiment    auprc  cv_mean_auprc  cv_std_auprc  cv_ci_lower  cv_ci_upper  threshold_used threshold_mode  precision@threshold  recall@threshold  roc_auc    brier    tn   fp  fn  tp                   source  auprc_ci_lower  auprc_ci_upper
+ baseline         hist_gradient_boosting 0.731961       0.743365      0.040394     0.714546     0.774218             0.5          fixed             0.269113          0.897959 0.969311 0.006176 56625  239  10  88        train_baseline.py             NaN             NaN
+ baseline              logistic_balanced 0.718971       0.745652      0.059491     0.704073     0.791347             0.5          fixed             0.060976          0.918367 0.972083 0.023491 55478 1386   8  90        train_baseline.py             NaN             NaN
+imbalance                          smote 0.734231            NaN           NaN          NaN          NaN             0.5          fixed             0.134146          0.897959 0.976482 0.009566 56296  568  10  88 imbalance_experiments.py        0.651152        0.829513
+imbalance          baseline_class_weight 0.718971            NaN           NaN          NaN          NaN             0.5          fixed             0.060976          0.918367 0.972083 0.023491 55478 1386   8  90 imbalance_experiments.py        0.628551        0.817933
+imbalance           random_undersampling 0.457838            NaN           NaN          NaN          NaN             0.5          fixed             0.051576          0.918367 0.975192 0.028274 55209 1655   8  90 imbalance_experiments.py        0.371743        0.573383
+imbalance undersampling_calibrated_probs 0.450806            NaN           NaN          NaN          NaN             0.5          fixed             0.653061          0.326531 0.973811 0.001278 56847   17  66  32 imbalance_experiments.py        0.349394        0.567913
+
+Saved table to: outputs\experiment_report.csv
+Saved text report to: outputs\experiment_report.txt
+Saved plot set to: outputs\experiment_report_plots.png
