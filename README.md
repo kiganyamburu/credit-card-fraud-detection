@@ -35,6 +35,9 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
   - SMOTE oversampling
   - Undersampling with calibrated probabilities
   - AUPRC, ROC-AUC, Brier score, and threshold metrics
+- `report_experiments.py`: generates a compact unified report
+  - One combined results table for baseline and imbalance experiments
+  - One multi-panel plot set for AUPRC, threshold trade-offs, and calibration
 
 ## Quick start
 
@@ -85,6 +88,12 @@ Optional calibration and CI settings:
 python imbalance_experiments.py --calibration-method sigmoid --bootstrap-iters 2000 --ci-level 0.95
 ```
 
+Unified experiment report:
+
+```bash
+python report_experiments.py --csv creditcard.csv
+```
+
 ## Outputs
 
 After running, the script writes:
@@ -96,6 +105,12 @@ Experiment module outputs:
 
 - `outputs/imbalance_methods_summary.txt`
 - `outputs/imbalance_methods_summary.csv`
+
+Unified report outputs:
+
+- `outputs/experiment_report.csv`
+- `outputs/experiment_report.txt`
+- `outputs/experiment_report_plots.png`
 
 and prints a concise comparison table in the terminal.
 
