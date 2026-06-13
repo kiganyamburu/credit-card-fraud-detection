@@ -29,6 +29,12 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
   - Bootstrap confidence intervals for mean CV AUPRC
   - Precision, recall, and confusion matrix at a configurable or tuned threshold
   - Saved precision-recall curve image
+- `imbalance_experiments.py`: compares imbalance handling methods
+  - Baseline class-weighted logistic regression
+  - Random undersampling
+  - SMOTE oversampling
+  - Undersampling with calibrated probabilities
+  - AUPRC, ROC-AUC, Brier score, and threshold metrics
 
 ## Quick start
 
@@ -67,12 +73,29 @@ python train_baseline.py --target-recall 0.90
 python train_baseline.py --target-precision 0.30
 ```
 
+Imbalance methods experiment module:
+
+```bash
+python imbalance_experiments.py --csv creditcard.csv --threshold 0.5
+```
+
+Optional calibration and CI settings:
+
+```bash
+python imbalance_experiments.py --calibration-method sigmoid --bootstrap-iters 2000 --ci-level 0.95
+```
+
 ## Outputs
 
 After running, the script writes:
 
 - `outputs/metrics_summary.txt`
 - `outputs/pr_curve.png`
+
+Experiment module outputs:
+
+- `outputs/imbalance_methods_summary.txt`
+- `outputs/imbalance_methods_summary.csv`
 
 and prints a concise comparison table in the terminal.
 

@@ -1,0 +1,17 @@
+Imbalance Methods Comparison
+========================================
+
+Samples: 284807
+Fraud count: 492
+Fraud rate: 0.001727
+Test size: 0.2
+Threshold: 0.5
+Bootstrap iterations: 500
+CI level: 0.95
+Calibration method: sigmoid
+
+                    experiment    auprc  auprc_ci_lower  auprc_ci_upper  roc_auc    brier  precision@threshold  recall@threshold    tn   fp  fn  tp
+                         smote 0.734231        0.649097        0.825770 0.976482 0.009566             0.134146          0.897959 56296  568  10  88
+         baseline_class_weight 0.718971        0.624757        0.817890 0.972083 0.023491             0.060976          0.918367 55478 1386   8  90
+          random_undersampling 0.457838        0.371394        0.577465 0.975192 0.028274             0.051576          0.918367 55209 1655   8  90
+undersampling_calibrated_probs 0.450806        0.352055        0.567343 0.973811 0.001278             0.653061          0.326531 56847   17  66  32
