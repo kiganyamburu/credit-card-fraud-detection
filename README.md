@@ -23,8 +23,10 @@ Precision-Recall Curve (AUPRC / Average Precision)** instead of raw accuracy.
 
 - `train_baseline.py`: trains and evaluates strong classical baselines
   - Stratified train/test split
+  - Stratified k-fold cross-validation on training data
   - Models with class imbalance handling
   - AUPRC-first evaluation
+  - Bootstrap confidence intervals for mean CV AUPRC
   - Precision, recall, and confusion matrix at a configurable or tuned threshold
   - Saved precision-recall curve image
 
@@ -47,6 +49,12 @@ Optional arguments:
 
 ```bash
 python train_baseline.py --csv creditcard.csv --test-size 0.2 --threshold 0.5 --seed 42
+```
+
+Cross-validation and confidence intervals:
+
+```bash
+python train_baseline.py --cv-folds 5 --ci-level 0.95 --cv-bootstrap-iters 2000
 ```
 
 Threshold tuning options (choose one):
@@ -72,6 +80,7 @@ and prints a concise comparison table in the terminal.
 
 - Accuracy is not a meaningful primary metric for this dataset.
 - AUPRC is used as the ranking metric.
+- CV mean AUPRC with confidence intervals provides variance-aware model comparison.
 - Thresholded metrics are reported to help downstream operations tuning.
 - You can tune threshold for operational constraints:
   - maximize precision subject to recall >= target

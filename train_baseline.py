@@ -4,6 +4,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.base import clone
 from sklearn.ensemble import HistGradientBoostingClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -13,7 +14,7 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold, train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -63,6 +64,24 @@ def parse_args() -> argparse.Namespace:
             "Tune threshold to satisfy precision >= target and maximize recall. "
             "Mutually exclusive with --target-recall."
         ),
+    )
+    parser.add_argument(
+        "--cv-folds",
+        type=int,
+        default=5,
+        help="Number of stratified CV folds for AUPRC estimation.",
+    )
+    parser.add_argument(
+        "--ci-level",
+        type=float,
+        default=0.95,
+        help="Confidence interval level for CV mean AUPRC (e.g., 0.95).",
+    )
+    parser.add_argument(
+        "--cv-bootstrap-iters",
+        type=int,
+        default=2000,
+        help="Bootstrap iterations for CV mean AUPRC confidence intervals.",
     )
     return parser.parse_args()
 
@@ -175,6 +194,65 @@ def tune_threshold(
     return float(thresholds[chosen_idx]), mode
 
 
+def bootstrap_mean_ci(
+    values: np.ndarray,
+    ci_level: float,
+    iterations: int,
+    seed: int,
+) -> tuple[float, float]:
+    rng = np.random.default_rng(seed)
+    n = values.size
+    if n == 1:
+        return float(values[0]), float(values[0])
+
+    samples = rng.choice(values, size=(iterations, n), replace=True)
+    means = samples.mean(axis=1)
+    alpha = 1.0 - ci_level
+    lower = float(np.quantile(means, alpha / 2.0))
+    upper = float(np.quantile(means, 1.0 - alpha / 2.0))
+    return lower, upper
+
+
+def cross_validate_auprc(
+    model,
+    X: pd.DataFrame,
+    y: pd.Series,
+    cv_folds: int,
+    ci_level: float,
+    bootstrap_iters: int,
+    seed: int,
+) -> tuple[float, float, float, float]:
+    splitter = StratifiedKFold(n_splits=cv_folds, shuffle=True, random_state=seed)
+    fold_scores = []
+
+    for fold_idx, (train_idx, valid_idx) in enumerate(splitter.split(X, y)):
+        fold_model = clone(model)
+        X_fold_train = X.iloc[train_idx]
+        y_fold_train = y.iloc[train_idx]
+        X_fold_valid = X.iloc[valid_idx]
+        y_fold_valid = y.iloc[valid_idx]
+
+        fold_model.fit(X_fold_train, y_fold_train)
+        if hasattr(fold_model, "predict_proba"):
+            y_score = fold_model.predict_proba(X_fold_valid)[:, 1]
+        else:
+            y_score = fold_model.decision_function(X_fold_valid)
+
+        fold_ap = average_precision_score(y_fold_valid, y_score)
+        fold_scores.append(float(fold_ap))
+
+    scores = np.asarray(fold_scores, dtype=float)
+    mean_auprc = float(scores.mean())
+    std_auprc = float(scores.std(ddof=1)) if scores.size > 1 else 0.0
+    ci_lower, ci_upper = bootstrap_mean_ci(
+        scores,
+        ci_level=ci_level,
+        iterations=bootstrap_iters,
+        seed=seed,
+    )
+    return mean_auprc, std_auprc, ci_lower, ci_upper
+
+
 def save_pr_curve(y_true: pd.Series, y_score, output_path: Path) -> None:
     precision, recall, _ = precision_recall_curve(y_true, y_score)
 
@@ -207,6 +285,12 @@ def main() -> None:
         raise ValueError(
             "Use only one tuning target at a time: --target-recall or --target-precision."
         )
+    if args.cv_folds < 2:
+        raise ValueError("--cv-folds must be >= 2.")
+    if not 0.0 < args.ci_level < 1.0:
+        raise ValueError("--ci-level must be between 0 and 1.")
+    if args.cv_bootstrap_iters < 100:
+        raise ValueError("--cv-bootstrap-iters must be >= 100.")
 
     X, y = load_data(csv_path)
 
@@ -226,6 +310,16 @@ def main() -> None:
     best_scores = None
 
     for name, model in models.items():
+        cv_mean_ap, cv_std_ap, cv_ci_low, cv_ci_high = cross_validate_auprc(
+            model,
+            X_train,
+            y_train,
+            cv_folds=args.cv_folds,
+            ci_level=args.ci_level,
+            bootstrap_iters=args.cv_bootstrap_iters,
+            seed=args.seed,
+        )
+
         model.fit(X_train, y_train)
 
         if hasattr(model, "predict_proba"):
@@ -250,6 +344,10 @@ def main() -> None:
             {
                 "model": name,
                 "auprc": ap,
+                "cv_mean_auprc": cv_mean_ap,
+                "cv_std_auprc": cv_std_ap,
+                "cv_ci_lower": cv_ci_low,
+                "cv_ci_upper": cv_ci_high,
                 "threshold_used": threshold_used,
                 "threshold_mode": threshold_mode,
                 "precision@threshold": precision_at_t,
@@ -279,6 +377,9 @@ def main() -> None:
         f.write(f"Fraud count: {int(y.sum())}\n")
         f.write(f"Fraud rate: {float(y.mean()):.6f}\n")
         f.write(f"Test size: {args.test_size}\n")
+        f.write(f"CV folds: {args.cv_folds}\n")
+        f.write(f"CI level: {args.ci_level}\n")
+        f.write(f"CV bootstrap iterations: {args.cv_bootstrap_iters}\n")
         f.write(f"Threshold fallback: {args.threshold}\n")
         f.write(f"Target recall: {args.target_recall}\n")
         f.write(f"Target precision: {args.target_precision}\n\n")
