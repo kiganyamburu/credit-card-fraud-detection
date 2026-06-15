@@ -5,8 +5,10 @@ Samples: 284807
 Fraud count: 492
 Fraud rate: 0.001727
 Test size: 0.2
-Threshold: 0.5
+Threshold fallback: 0.5
+Target recall: 0.9
+Target precision: None
 
-                 model    auprc  precision@threshold  recall@threshold    tn   fp  fn  tp
-hist_gradient_boosting 0.731961             0.269113          0.897959 56625  239  10  88
-     logistic_balanced 0.718971             0.060976          0.918367 55478 1386   8  90
+                 model    auprc  threshold_used threshold_mode  precision@threshold  recall@threshold    tn  fp  fn  tp
+hist_gradient_boosting 0.731961        0.309374  target_recall             0.139280          0.908163 56314 550   9  89
+     logistic_balanced 0.718971        0.749168  target_recall             0.141494          0.908163 56324 540   9  89
