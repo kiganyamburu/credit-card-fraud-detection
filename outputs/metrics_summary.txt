@@ -1,0 +1,12 @@
+Fraud Detection Baseline Metrics
+========================================
+
+Samples: 284807
+Fraud count: 492
+Fraud rate: 0.001727
+Test size: 0.2
+Threshold: 0.5
+
+                 model    auprc  precision@threshold  recall@threshold    tn   fp  fn  tp
+hist_gradient_boosting 0.731961             0.269113          0.897959 56625  239  10  88
+     logistic_balanced 0.718971             0.060976          0.918367 55478 1386   8  90
